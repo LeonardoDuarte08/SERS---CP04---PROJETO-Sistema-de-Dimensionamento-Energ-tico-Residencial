@@ -59,6 +59,8 @@ while continuar == "s":
 
 custo_total = consumo_total * valor_kwh
 
+consumo_referencia = consumo_total
+
 print("\n===== DIMENSIONAMENTO FOTOVOLTAICO =====")
 
 percentual_atendimento = float(
@@ -73,7 +75,7 @@ while percentual_atendimento <= 0 or percentual_atendimento > 100:
 
 fracao_atendimento = percentual_atendimento / 100
 
-energia_fv = consumo_total * fracao_atendimento
+energia_fv = consumo_referencia * fracao_atendimento
 
 hsp = float(
     input("Digite as Horas de Sol Pleno (HSP) médias da localização: ")
@@ -105,11 +107,12 @@ for item in resumo:
         "| Consumo:", item[3], "kWh/mês"
     )
 
-print("\nConsumo total:", round(consumo_total, 2), "kWh/mês")
+print("Consumo de referência:", round(consumo_referencia, 2), "kWh/mês")
 print("Valor do kWh: R$", valor_kwh)
 print("Custo total estimado: R$", round(custo_total, 2))
 
 print("\n===== RESULTADO FOTOVOLTAICO =====")
+print("Consumo de referência:", round(consumo_referencia, 2), "kWh/mês")
 print("Percentual de atendimento:", percentual_atendimento, "%")
 print("Energia mensal desejada:", round(energia_fv, 2), "kWh/mês")
 print("HSP utilizada:", hsp, "h/dia")
