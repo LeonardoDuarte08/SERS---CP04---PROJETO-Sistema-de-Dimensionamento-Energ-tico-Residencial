@@ -59,6 +59,37 @@ while continuar == "s":
 
 custo_total = consumo_total * valor_kwh
 
+print("\n===== DIMENSIONAMENTO FOTOVOLTAICO =====")
+
+percentual_atendimento = float(
+    input("Qual percentual do consumo deseja atender com energia solar? (%): ")
+)
+
+while percentual_atendimento <= 0 or percentual_atendimento > 100:
+    print("Percentual inválido. Digite um valor entre 1 e 100.")
+    percentual_atendimento = float(
+        input("Qual percentual do consumo deseja atender com energia solar? (%): ")
+    )
+
+fracao_atendimento = percentual_atendimento / 100
+
+energia_fv = consumo_total * fracao_atendimento
+
+hsp = float(
+    input("Digite as Horas de Sol Pleno (HSP) médias da localização: ")
+)
+
+while hsp <= 0:
+    print("HSP inválida. Digite um valor maior que zero.")
+    hsp = float(
+        input("Digite as Horas de Sol Pleno (HSP) médias da localização: ")
+    )
+
+dias = 30
+eficiencia_global = 0.80
+
+potencia_fv = energia_fv / (hsp * dias * eficiencia_global)
+
 print("\n===== RELATÓRIO FINAL =====")
 print("Nome:", nome)
 print("Cidade:", cidade)
@@ -67,8 +98,20 @@ print("Moradores:", moradores)
 
 print("\nEquipamentos cadastrados:")
 for item in resumo:
-    print("-", item[0], "| Quantidade:", item[1], "| Horas/dia:", item[2], "| Consumo:", item[3], "kWh/mês")
+    print(
+        "-", item[0],
+        "| Quantidade:", item[1],
+        "| Horas/dia:", item[2],
+        "| Consumo:", item[3], "kWh/mês"
+    )
 
 print("\nConsumo total:", round(consumo_total, 2), "kWh/mês")
 print("Valor do kWh: R$", valor_kwh)
 print("Custo total estimado: R$", round(custo_total, 2))
+
+print("\n===== RESULTADO FOTOVOLTAICO =====")
+print("Percentual de atendimento:", percentual_atendimento, "%")
+print("Energia mensal desejada:", round(energia_fv, 2), "kWh/mês")
+print("HSP utilizada:", hsp, "h/dia")
+print("Eficiência global:", eficiencia_global * 100, "%")
+print("Potência FV necessária:", round(potencia_fv, 2), "kWp")
