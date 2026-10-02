@@ -1,5 +1,6 @@
 import csv
 import math
+import os
 
 nome = input("Digite seu nome: ")
 cidade = input("Digite sua cidade: ")
@@ -1208,3 +1209,274 @@ print(
     round(custo_total_sistema, 2)
 )
 
+# SALVANDO EVIDÊNCIAS EM TXT PARA A T44
+
+os.makedirs("evidencias", exist_ok=True)
+
+if tem_bateria:
+    nome_arquivo_evidencia = "cenario_com_bateria.txt"
+else:
+    nome_arquivo_evidencia = "cenario_sem_bateria.txt"
+
+caminho_arquivo_evidencia = os.path.join(
+    "evidencias",
+    nome_arquivo_evidencia
+)
+
+linhas_evidencia = []
+
+linhas_evidencia.append("===== RELATÓRIO FINAL =====")
+linhas_evidencia.append(f"Nome: {nome}")
+linhas_evidencia.append(f"Cidade: {cidade}")
+linhas_evidencia.append(f"Área da casa: {area} m²")
+linhas_evidencia.append(f"Moradores: {moradores}")
+linhas_evidencia.append("")
+
+linhas_evidencia.append("Equipamentos cadastrados:")
+for item in resumo:
+    linhas_evidencia.append(
+        f"- {item[0]} | Quantidade: {item[1]} | Horas/dia: {item[2]} | Consumo: {item[3]} kWh/mês"
+    )
+
+linhas_evidencia.append("")
+linhas_evidencia.append(
+    f"Consumo total: {round(consumo_total, 2)} kWh/mês"
+)
+linhas_evidencia.append(f"Valor do kWh: R$ {valor_kwh}")
+linhas_evidencia.append(
+    f"Custo total estimado: R$ {round(custo_total, 2)}"
+)
+linhas_evidencia.append("")
+
+linhas_evidencia.append("===== RESULTADO FOTOVOLTAICO =====")
+linhas_evidencia.append(
+    f"Consumo de referência: {round(consumo_referencia, 2)} kWh/mês"
+)
+linhas_evidencia.append(
+    f"Percentual de atendimento: {percentual_atendimento} %"
+)
+linhas_evidencia.append(
+    f"Energia mensal desejada: {round(energia_fv, 2)} kWh/mês"
+)
+linhas_evidencia.append(f"HSP utilizada: {hsp} h/dia")
+linhas_evidencia.append(
+    f"Eficiência global: {eficiencia_global * 100} %"
+)
+linhas_evidencia.append(
+    f"Potência FV necessária: {round(potencia_fv, 2)} kWp"
+)
+linhas_evidencia.append("")
+
+linhas_evidencia.append("===== MÓDULO SELECIONADO =====")
+linhas_evidencia.append(
+    f"Fabricante: {melhor_modulo['fabricante']}"
+)
+linhas_evidencia.append(
+    f"Modelo: {melhor_modulo['modelo']}"
+)
+linhas_evidencia.append(
+    f"Potência por módulo: {melhor_modulo['potencia_wp']} Wp"
+)
+linhas_evidencia.append(
+    f"Quantidade: {melhor_modulo['quantidade']}"
+)
+linhas_evidencia.append(
+    f"Potência instalada: {round(melhor_modulo['potencia_instalada'], 2)} kWp"
+)
+linhas_evidencia.append(
+    f"Potência excedente: {round(melhor_modulo['potencia_instalada'] - potencia_fv, 2)} kWp"
+)
+linhas_evidencia.append(
+    f"Custo total dos módulos: R$ {round(melhor_modulo['custo_total'], 2)}"
+)
+linhas_evidencia.append("")
+
+linhas_evidencia.append("===== INVERSOR SELECIONADO =====")
+
+if melhor_inversor is not None:
+    linhas_evidencia.append(
+        f"Fabricante: {melhor_inversor['fabricante']}"
+    )
+    linhas_evidencia.append(
+        f"Modelo: {melhor_inversor['modelo']}"
+    )
+    linhas_evidencia.append(
+        f"Tipo: {melhor_inversor['tipo']}"
+    )
+    linhas_evidencia.append(
+        f"Potência nominal: {melhor_inversor['potencia_nominal_w']} W"
+    )
+    linhas_evidencia.append(
+        f"Potência máxima FV: {melhor_inversor['potencia_max_fv_w']} W"
+    )
+    linhas_evidencia.append(
+        f"Número de MPPT: {melhor_inversor['numero_mppt']}"
+    )
+    linhas_evidencia.append(
+        f"Compatível com bateria: {melhor_inversor['compativel_bateria']}"
+    )
+    linhas_evidencia.append(
+        f"Preço: R$ {round(melhor_inversor['preco_brl'], 2)}"
+    )
+    linhas_evidencia.append("")
+    linhas_evidencia.append("===== VALIDAÇÃO TÉCNICA =====")
+    linhas_evidencia.append(
+        f"Potência FV instalada: {round(potencia_instalada_w, 2)} W"
+    )
+    linhas_evidencia.append(
+        f"Voc da string: {round(voc_string, 2)} V"
+    )
+    linhas_evidencia.append(
+        f"Vmp da string: {round(vmp_string, 2)} V"
+    )
+    linhas_evidencia.append(
+        f"Isc da string: {round(isc_string, 2)} A"
+    )
+    linhas_evidencia.append(
+        f"Imp da string: {round(imp_string, 2)} A"
+    )
+    linhas_evidencia.append("Status: configuração compatível")
+else:
+    linhas_evidencia.append(
+        "Nenhum inversor compatível encontrado."
+    )
+
+linhas_evidencia.append("")
+linhas_evidencia.append("===== ARMAZENAMENTO POR BATERIA =====")
+
+if tem_bateria:
+    linhas_evidencia.append("Armazenamento solicitado: Sim")
+    linhas_evidencia.append(
+        f"Autonomia desejada: {horas_autonomia} horas"
+    )
+    linhas_evidencia.append(
+        f"Consumo médio diário: {round(consumo_diario, 2)} kWh/dia"
+    )
+    linhas_evidencia.append(
+        f"Energia necessária para autonomia: {round(energia_autonomia, 2)} kWh"
+    )
+    linhas_evidencia.append(
+        f"Eficiência considerada da bateria: {eficiencia_bateria * 100} %"
+    )
+
+    if melhor_bateria is not None:
+        linhas_evidencia.append("")
+        linhas_evidencia.append("===== BATERIA SELECIONADA =====")
+        linhas_evidencia.append(
+            f"Fabricante: {melhor_bateria['fabricante']}"
+        )
+        linhas_evidencia.append(
+            f"Modelo: {melhor_bateria['modelo']}"
+        )
+        linhas_evidencia.append(
+            f"Tecnologia: {melhor_bateria['tecnologia']}"
+        )
+        linhas_evidencia.append(
+            f"Capacidade por bateria: {melhor_bateria['capacidade_kwh']} kWh"
+        )
+        linhas_evidencia.append(
+            f"DoD: {melhor_bateria['dod_pct']} %"
+        )
+        linhas_evidencia.append(
+            f"Quantidade: {melhor_bateria['quantidade']}"
+        )
+        linhas_evidencia.append(
+            f"Capacidade nominal instalada: {round(melhor_bateria['capacidade_instalada'], 2)} kWh"
+        )
+        linhas_evidencia.append(
+            f"Capacidade útil instalada: {round(melhor_bateria['capacidade_util_instalada'], 2)} kWh"
+        )
+        linhas_evidencia.append(
+            f"Custo total das baterias: R$ {round(melhor_bateria['custo_total'], 2)}"
+        )
+
+        if melhor_inversor is not None:
+            linhas_evidencia.append(
+                "Inversor compatível com sistema de armazenamento: Sim"
+            )
+        else:
+            linhas_evidencia.append(
+                "Inversor compatível com sistema de armazenamento: Não"
+            )
+else:
+    linhas_evidencia.append("Armazenamento solicitado: Não")
+
+linhas_evidencia.append("")
+linhas_evidencia.append("===== ORÇAMENTO DO SISTEMA =====")
+linhas_evidencia.append(
+    f"Custo dos módulos: R$ {round(custo_modulos_orcamento, 2)}"
+)
+linhas_evidencia.append(
+    f"Custo do inversor: R$ {round(custo_inversor_orcamento, 2)}"
+)
+linhas_evidencia.append(
+    f"Custo das baterias: R$ {round(custo_baterias_orcamento, 2)}"
+)
+linhas_evidencia.append(
+    f"Custo total dos equipamentos: R$ {round(custo_total_sistema, 2)}"
+)
+
+linhas_evidencia.append("")
+linhas_evidencia.append("===== RESUMO FINAL DO DIMENSIONAMENTO =====")
+linhas_evidencia.append(
+    f"Consumo de referência: {round(consumo_referencia, 2)} kWh/mês"
+)
+linhas_evidencia.append(
+    f"Percentual atendido por energia solar: {percentual_atendimento} %"
+)
+linhas_evidencia.append(
+    f"Geração mensal desejada: {round(energia_fv, 2)} kWh/mês"
+)
+linhas_evidencia.append(
+    f"HSP considerada: {hsp} h/dia"
+)
+linhas_evidencia.append(
+    f"Potência FV calculada: {round(potencia_fv, 2)} kWp"
+)
+linhas_evidencia.append(
+    f"Potência FV instalada: {round(melhor_modulo['potencia_instalada'], 2)} kWp"
+)
+linhas_evidencia.append(
+    f"Módulos: {melhor_modulo['quantidade']} x {melhor_modulo['fabricante']} {melhor_modulo['modelo']} - {melhor_modulo['potencia_wp']} Wp"
+)
+
+if melhor_inversor is not None:
+    linhas_evidencia.append(
+        f"Inversor: {melhor_inversor['fabricante']} {melhor_inversor['modelo']} - {melhor_inversor['potencia_nominal_w']} W"
+    )
+else:
+    linhas_evidencia.append(
+        "Inversor: nenhuma opção compatível encontrada"
+    )
+
+if tem_bateria and melhor_bateria is not None:
+    linhas_evidencia.append("Sistema com bateria: Sim")
+    linhas_evidencia.append(
+        f"Autonomia desejada: {horas_autonomia} horas"
+    )
+    linhas_evidencia.append(
+        f"Baterias: {melhor_bateria['quantidade']} x {melhor_bateria['fabricante']} {melhor_bateria['modelo']}"
+    )
+    linhas_evidencia.append(
+        f"Capacidade nominal instalada: {round(melhor_bateria['capacidade_instalada'], 2)} kWh"
+    )
+    linhas_evidencia.append(
+        f"Capacidade útil instalada: {round(melhor_bateria['capacidade_util_instalada'], 2)} kWh"
+    )
+else:
+    linhas_evidencia.append("Sistema com bateria: Não")
+
+linhas_evidencia.append(
+    f"Custo total dos equipamentos: R$ {round(custo_total_sistema, 2)}"
+)
+
+with open(
+    caminho_arquivo_evidencia,
+    "w",
+    encoding="utf-8"
+) as arquivo_evidencia:
+    arquivo_evidencia.write("\n".join(linhas_evidencia))
+
+print(
+    f"\nEvidência salva automaticamente em: {caminho_arquivo_evidencia}"
+)
