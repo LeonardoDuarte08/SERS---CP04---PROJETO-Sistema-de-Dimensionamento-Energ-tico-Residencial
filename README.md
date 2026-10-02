@@ -193,3 +193,5 @@ ou
 ```text
 evidencias/cenario_com_bateria.txt
 ```
+<<<<<<< HEAD
+=======
