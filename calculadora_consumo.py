@@ -330,6 +330,53 @@ if len(inversores_compativeis) > 0:
             inversor["preco_brl"]
     )
 
+# T38 / T39
+# OPÇÃO DE ARMAZENAMENTO E CÁLCULO DE AUTONOMIA
+
+usar_bateria = input(
+    "\nDeseja incluir sistema de armazenamento por bateria? (s/n): "
+).strip().lower()
+
+while usar_bateria not in ["s", "n"]:
+    print("Opção inválida. Digite s para sim ou n para não.")
+
+    usar_bateria = input(
+        "Deseja incluir sistema de armazenamento por bateria? (s/n): "
+    ).strip().lower()
+
+tem_bateria = usar_bateria == "s"
+
+horas_autonomia = 0
+consumo_diario = 0
+energia_autonomia = 0
+
+if tem_bateria:
+
+    horas_autonomia = float(
+        input(
+            "Quantas horas de autonomia deseja para as baterias? "
+        )
+    )
+
+    while horas_autonomia <= 0 or horas_autonomia > 24:
+        print(
+            "Autonomia inválida. "
+            "Digite um valor maior que 0 e de no máximo 24 horas."
+        )
+
+        horas_autonomia = float(
+            input(
+                "Quantas horas de autonomia deseja para as baterias? "
+            )
+        )
+
+    consumo_diario = consumo_referencia / 30
+
+    energia_autonomia = (
+        consumo_diario
+        * (horas_autonomia / 24)
+    )
+
 # RELATÓRIO FINAL
 
 print("\n===== RELATÓRIO FINAL =====")
@@ -413,9 +460,7 @@ print(
     "kWp"
 )
 
-# =========================================================
 # MÓDULO SELECIONADO
-# =========================================================
 
 print(
     "\n===== MÓDULO SELECIONADO ====="
@@ -469,9 +514,7 @@ print(
     )
 )
 
-# =========================================================
 # INVERSOR SELECIONADO
-# =========================================================
 
 print(
     "\n===== INVERSOR SELECIONADO ====="
@@ -590,3 +633,24 @@ else:
         "é compatível com a configuração "
         "dimensionada."
     )
+
+print("\n===== ARMAZENAMENTO POR BATERIA =====")
+
+if tem_bateria:
+
+    print("Armazenamento solicitado: Sim")
+    print("Autonomia desejada:", horas_autonomia, "horas")
+    print(
+        "Consumo médio diário:",
+        round(consumo_diario, 2),
+        "kWh/dia"
+    )
+    print(
+        "Energia necessária para autonomia:",
+        round(energia_autonomia, 2),
+        "kWh"
+    )
+
+else:
+
+    print("Armazenamento solicitado: Não")
