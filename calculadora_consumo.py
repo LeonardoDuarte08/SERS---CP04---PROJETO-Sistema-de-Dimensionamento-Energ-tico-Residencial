@@ -1,3 +1,6 @@
+import csv
+import math
+
 nome = input("Digite seu nome: ")
 cidade = input("Digite sua cidade: ")
 area = input("Quantos m² tem sua casa? ")
@@ -92,6 +95,55 @@ eficiencia_global = 0.80
 
 potencia_fv = energia_fv / (hsp * dias * eficiencia_global)
 
+# Seleção automática do módulo fotovoltaico
+
+modulos = []
+
+with open("dados/modulos.csv", encoding="utf-8-sig") as arquivo:
+    leitor = csv.DictReader(arquivo, delimiter=";")
+
+    for linha in leitor:
+        modulo = {
+            "id": linha["id"],
+            "fabricante": linha["fabricante"],
+            "modelo": linha["modelo"],
+            "potencia_wp": float(linha["potencia_wp"]),
+            "preco_brl": float(linha["preco_brl"])
+        }
+
+        modulos.append(modulo)
+
+melhor_modulo = None
+menor_custo = None
+
+for modulo in modulos:
+
+    quantidade_modulos = math.ceil(
+        (potencia_fv * 1000) / modulo["potencia_wp"]
+    )
+
+    potencia_instalada = (
+        quantidade_modulos * modulo["potencia_wp"]
+    ) / 1000
+
+    custo_modulos = (
+        quantidade_modulos * modulo["preco_brl"]
+    )
+
+    if menor_custo is None or custo_modulos < menor_custo:
+
+        menor_custo = custo_modulos
+
+        melhor_modulo = {
+            "id": modulo["id"],
+            "fabricante": modulo["fabricante"],
+            "modelo": modulo["modelo"],
+            "potencia_wp": modulo["potencia_wp"],
+            "quantidade": quantidade_modulos,
+            "potencia_instalada": potencia_instalada,
+            "custo_total": custo_modulos
+        }
+
 print("\n===== RELATÓRIO FINAL =====")
 print("Nome:", nome)
 print("Cidade:", cidade)
@@ -118,3 +170,18 @@ print("Energia mensal desejada:", round(energia_fv, 2), "kWh/mês")
 print("HSP utilizada:", hsp, "h/dia")
 print("Eficiência global:", eficiencia_global * 100, "%")
 print("Potência FV necessária:", round(potencia_fv, 2), "kWp")
+
+print("\n===== MÓDULO SELECIONADO =====")
+print("Fabricante:", melhor_modulo["fabricante"])
+print("Modelo:", melhor_modulo["modelo"])
+print("Potência por módulo:", melhor_modulo["potencia_wp"], "Wp")
+print("Quantidade:", melhor_modulo["quantidade"])
+print(
+    "Potência instalada:",
+    round(melhor_modulo["potencia_instalada"], 2),
+    "kWp"
+)
+print(
+    "Custo total dos módulos: R$",
+    round(melhor_modulo["custo_total"], 2)
+)
