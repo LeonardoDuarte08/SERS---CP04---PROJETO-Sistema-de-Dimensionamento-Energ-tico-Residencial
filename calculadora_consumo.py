@@ -377,6 +377,318 @@ if tem_bateria:
         * (horas_autonomia / 24)
     )
 
+# T40
+# SELEÇÃO AUTOMÁTICA DAS BATERIAS
+
+melhor_bateria = None
+eficiencia_bateria = 0.90
+
+if tem_bateria:
+
+    baterias = []
+
+    with open(
+        "dados/baterias.csv",
+        encoding="utf-8-sig"
+    ) as arquivo:
+
+        leitor = csv.DictReader(
+            arquivo,
+            delimiter=";"
+        )
+
+        for linha in leitor:
+
+            bateria = {
+                "id": linha["id"],
+                "fabricante": linha["fabricante"],
+                "modelo": linha["modelo"],
+                "tecnologia": linha["tecnologia"],
+                "tensao_nominal_v": float(
+                    linha["tensao_nominal_v"]
+                ),
+                "capacidade_ah": float(
+                    linha["capacidade_ah"]
+                ),
+                "capacidade_kwh": float(
+                    linha["capacidade_kwh"]
+                ),
+                "dod_pct": float(
+                    linha["dod_pct"]
+                ),
+                "ciclos": int(
+                    linha["ciclos"]
+                ),
+                "preco_brl": float(
+                    linha["preco_brl"]
+                )
+            }
+
+            baterias.append(bateria)
+
+    menor_custo_baterias = None
+
+    for bateria in baterias:
+
+        dod = bateria["dod_pct"] / 100
+
+        capacidade_util_unidade = (
+            bateria["capacidade_kwh"]
+            * dod
+        )
+
+        energia_corrigida = (
+            energia_autonomia
+            / eficiencia_bateria
+        )
+
+        quantidade_baterias = math.ceil(
+            energia_corrigida
+            / capacidade_util_unidade
+        )
+
+        capacidade_instalada = (
+            quantidade_baterias
+            * bateria["capacidade_kwh"]
+        )
+
+        capacidade_util_instalada = (
+            quantidade_baterias
+            * capacidade_util_unidade
+        )
+
+        custo_baterias = (
+            quantidade_baterias
+            * bateria["preco_brl"]
+        )
+
+        if (
+            menor_custo_baterias is None
+            or custo_baterias < menor_custo_baterias
+        ):
+
+            menor_custo_baterias = custo_baterias
+
+            melhor_bateria = {
+                "id": bateria["id"],
+                "fabricante": bateria["fabricante"],
+                "modelo": bateria["modelo"],
+                "tecnologia": bateria["tecnologia"],
+                "tensao_nominal_v":
+                    bateria["tensao_nominal_v"],
+                "capacidade_kwh":
+                    bateria["capacidade_kwh"],
+                "dod_pct":
+                    bateria["dod_pct"],
+                "ciclos":
+                    bateria["ciclos"],
+                "quantidade":
+                    quantidade_baterias,
+                "capacidade_instalada":
+                    capacidade_instalada,
+                "capacidade_util_instalada":
+                    capacidade_util_instalada,
+                "custo_total":
+                    custo_baterias
+            }
+
+# T41
+# VALIDAÇÃO DA ARQUITETURA COM BATERIA
+
+if tem_bateria:
+
+    melhor_combinacao = None
+    menor_custo_combinacao = None
+
+    for modulo in modulos:
+
+        quantidade_modulos = math.ceil(
+            (potencia_fv * 1000)
+            / modulo["potencia_wp"]
+        )
+
+        potencia_instalada_teste = (
+            quantidade_modulos
+            * modulo["potencia_wp"]
+        ) / 1000
+
+        potencia_instalada_teste_w = (
+            potencia_instalada_teste * 1000
+        )
+
+        voc_teste = (
+            modulo["voc_v"]
+            * quantidade_modulos
+        )
+
+        vmp_teste = (
+            modulo["vmp_v"]
+            * quantidade_modulos
+        )
+
+        isc_teste = modulo["isc_a"]
+
+        custo_modulos_teste = (
+            quantidade_modulos
+            * modulo["preco_brl"]
+        )
+
+        for inversor in inversores:
+
+            bateria_ok = (
+                inversor["compativel_bateria"]
+                .strip()
+                .lower()
+                == "sim"
+            )
+
+            potencia_ok = (
+                potencia_instalada_teste_w
+                <= inversor["potencia_max_fv_w"]
+            )
+
+            tensao_max_ok = (
+                voc_teste
+                <= inversor["tensao_max_entrada_v"]
+            )
+
+            mppt_ok = (
+                inversor["faixa_mppt_min_v"]
+                <= vmp_teste
+                <= inversor["faixa_mppt_max_v"]
+            )
+
+            corrente_ok = (
+                isc_teste
+                <= inversor["corrente_max_entrada_a"]
+            )
+
+            if (
+                bateria_ok
+                and potencia_ok
+                and tensao_max_ok
+                and mppt_ok
+                and corrente_ok
+            ):
+
+                custo_combinacao = (
+                    custo_modulos_teste
+                    + inversor["preco_brl"]
+                )
+
+                if (
+                    menor_custo_combinacao is None
+                    or custo_combinacao
+                    < menor_custo_combinacao
+                ):
+
+                    menor_custo_combinacao = (
+                        custo_combinacao
+                    )
+
+                    melhor_combinacao = {
+                        "modulo": modulo,
+                        "quantidade":
+                            quantidade_modulos,
+                        "potencia_instalada":
+                            potencia_instalada_teste,
+                        "custo_modulos":
+                            custo_modulos_teste,
+                        "inversor":
+                            inversor,
+                        "voc_string":
+                            voc_teste,
+                        "vmp_string":
+                            vmp_teste,
+                        "isc_string":
+                            isc_teste
+                    }
+
+    if melhor_combinacao is not None:
+
+        modulo_escolhido = (
+            melhor_combinacao["modulo"]
+        )
+
+        melhor_modulo = {
+            "id":
+                modulo_escolhido["id"],
+            "fabricante":
+                modulo_escolhido["fabricante"],
+            "modelo":
+                modulo_escolhido["modelo"],
+            "potencia_wp":
+                modulo_escolhido["potencia_wp"],
+            "voc_v":
+                modulo_escolhido["voc_v"],
+            "isc_a":
+                modulo_escolhido["isc_a"],
+            "vmp_v":
+                modulo_escolhido["vmp_v"],
+            "imp_a":
+                modulo_escolhido["imp_a"],
+            "quantidade":
+                melhor_combinacao["quantidade"],
+            "potencia_instalada":
+                melhor_combinacao[
+                    "potencia_instalada"
+                ],
+            "custo_total":
+                melhor_combinacao[
+                    "custo_modulos"
+                ]
+        }
+
+        melhor_inversor = (
+            melhor_combinacao["inversor"]
+        )
+
+        voc_string = (
+            melhor_combinacao["voc_string"]
+        )
+
+        vmp_string = (
+            melhor_combinacao["vmp_string"]
+        )
+
+        isc_string = (
+            melhor_combinacao["isc_string"]
+        )
+
+        imp_string = melhor_modulo["imp_a"]
+
+        potencia_instalada_w = (
+            melhor_modulo[
+                "potencia_instalada"
+            ]
+            * 1000
+        )
+
+    else:
+
+        melhor_inversor = None
+
+# T42
+# CÁLCULO DO ORÇAMENTO DOS EQUIPAMENTOS
+
+custo_modulos_orcamento = melhor_modulo["custo_total"]
+
+custo_inversor_orcamento = 0
+
+if melhor_inversor is not None:
+    custo_inversor_orcamento = melhor_inversor["preco_brl"]
+
+custo_baterias_orcamento = 0
+
+if tem_bateria and melhor_bateria is not None:
+    custo_baterias_orcamento = melhor_bateria["custo_total"]
+
+custo_total_sistema = (
+    custo_modulos_orcamento
+    + custo_inversor_orcamento
+    + custo_baterias_orcamento
+)
+
 # RELATÓRIO FINAL
 
 print("\n===== RELATÓRIO FINAL =====")
@@ -639,18 +951,141 @@ print("\n===== ARMAZENAMENTO POR BATERIA =====")
 if tem_bateria:
 
     print("Armazenamento solicitado: Sim")
-    print("Autonomia desejada:", horas_autonomia, "horas")
+
+    print(
+        "Autonomia desejada:",
+        horas_autonomia,
+        "horas"
+    )
+
     print(
         "Consumo médio diário:",
         round(consumo_diario, 2),
         "kWh/dia"
     )
+
     print(
         "Energia necessária para autonomia:",
         round(energia_autonomia, 2),
         "kWh"
     )
 
+    print(
+        "Eficiência considerada da bateria:",
+        eficiencia_bateria * 100,
+        "%"
+    )
+
+    if melhor_bateria is not None:
+
+        print(
+            "\n===== BATERIA SELECIONADA ====="
+        )
+
+        print(
+            "Fabricante:",
+            melhor_bateria["fabricante"]
+        )
+
+        print(
+            "Modelo:",
+            melhor_bateria["modelo"]
+        )
+
+        print(
+            "Tecnologia:",
+            melhor_bateria["tecnologia"]
+        )
+
+        print(
+            "Capacidade por bateria:",
+            melhor_bateria["capacidade_kwh"],
+            "kWh"
+        )
+
+        print(
+            "DoD:",
+            melhor_bateria["dod_pct"],
+            "%"
+        )
+
+        print(
+            "Quantidade:",
+            melhor_bateria["quantidade"]
+        )
+
+        print(
+            "Capacidade nominal instalada:",
+            round(
+                melhor_bateria[
+                    "capacidade_instalada"
+                ],
+                2
+            ),
+            "kWh"
+        )
+
+        print(
+            "Capacidade útil instalada:",
+            round(
+                melhor_bateria[
+                    "capacidade_util_instalada"
+                ],
+                2
+            ),
+            "kWh"
+        )
+
+        print(
+            "Custo total das baterias: R$",
+            round(
+                melhor_bateria["custo_total"],
+                2
+            )
+        )
+
+        if melhor_inversor is not None:
+
+            print(
+                "Inversor compatível com sistema de armazenamento: Sim"
+            )
+
+        else:
+
+            print(
+                "Inversor compatível com sistema de armazenamento: Não"
+            )
+
 else:
 
     print("Armazenamento solicitado: Não")
+
+print("\n===== ORÇAMENTO DO SISTEMA =====")
+
+print(
+    "Custo dos módulos: R$",
+    round(custo_modulos_orcamento, 2)
+)
+
+print(
+    "Custo do inversor: R$",
+    round(custo_inversor_orcamento, 2)
+)
+
+if tem_bateria:
+
+    print(
+        "Custo das baterias: R$",
+        round(custo_baterias_orcamento, 2)
+    )
+
+else:
+
+    print(
+        "Custo das baterias: R$ 0.00"
+    )
+
+print(
+    "Custo total dos equipamentos: R$",
+    round(custo_total_sistema, 2)
+)
