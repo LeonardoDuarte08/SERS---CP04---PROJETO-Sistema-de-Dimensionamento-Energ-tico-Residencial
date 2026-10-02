@@ -1089,3 +1089,122 @@ print(
     "Custo total dos equipamentos: R$",
     round(custo_total_sistema, 2)
 )
+
+print("\n===== RESUMO FINAL DO DIMENSIONAMENTO =====")
+
+print(
+    "Consumo de referência:",
+    round(consumo_referencia, 2),
+    "kWh/mês"
+)
+
+print(
+    "Percentual atendido por energia solar:",
+    percentual_atendimento,
+    "%"
+)
+
+print(
+    "Geração mensal desejada:",
+    round(energia_fv, 2),
+    "kWh/mês"
+)
+
+print(
+    "HSP considerada:",
+    hsp,
+    "h/dia"
+)
+
+print(
+    "Potência FV calculada:",
+    round(potencia_fv, 2),
+    "kWp"
+)
+
+print(
+    "Potência FV instalada:",
+    round(
+        melhor_modulo["potencia_instalada"],
+        2
+    ),
+    "kWp"
+)
+
+print(
+    "Módulos:",
+    melhor_modulo["quantidade"],
+    "x",
+    melhor_modulo["fabricante"],
+    melhor_modulo["modelo"],
+    "-",
+    melhor_modulo["potencia_wp"],
+    "Wp"
+)
+
+if melhor_inversor is not None:
+
+    print(
+        "Inversor:",
+        melhor_inversor["fabricante"],
+        melhor_inversor["modelo"],
+        "-",
+        melhor_inversor["potencia_nominal_w"],
+        "W"
+    )
+
+else:
+
+    print(
+        "Inversor: nenhuma opção compatível encontrada"
+    )
+
+if tem_bateria and melhor_bateria is not None:
+
+    print("Sistema com bateria: Sim")
+
+    print(
+        "Autonomia desejada:",
+        horas_autonomia,
+        "horas"
+    )
+
+    print(
+        "Baterias:",
+        melhor_bateria["quantidade"],
+        "x",
+        melhor_bateria["fabricante"],
+        melhor_bateria["modelo"]
+    )
+
+    print(
+        "Capacidade nominal instalada:",
+        round(
+            melhor_bateria[
+                "capacidade_instalada"
+            ],
+            2
+        ),
+        "kWh"
+    )
+
+    print(
+        "Capacidade útil instalada:",
+        round(
+            melhor_bateria[
+                "capacidade_util_instalada"
+            ],
+            2
+        ),
+        "kWh"
+    )
+
+else:
+
+    print("Sistema com bateria: Não")
+
+print(
+    "Custo total dos equipamentos: R$",
+    round(custo_total_sistema, 2)
+)
+
