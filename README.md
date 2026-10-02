@@ -193,9 +193,3 @@ ou
 ```text
 evidencias/cenario_com_bateria.txt
 ```
-
----
-
-## Observação
-
-O sistema foi desenvolvido para fins acadêmicos e representa um pré-dimensionamento. Um projeto real deve considerar fatores adicionais de instalação, perdas, proteções, cabeamento, temperatura e especificações detalhadas dos fabricantes.
