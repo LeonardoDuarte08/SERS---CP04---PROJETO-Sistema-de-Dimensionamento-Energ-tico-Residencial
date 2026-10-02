@@ -1,0 +1,90 @@
+===== RELATÓRIO FINAL =====
+Nome: teste_com_bateria
+Cidade: sp
+Área da casa: 100 m²
+Moradores: 4
+
+Equipamentos cadastrados:
+- Geladeira | Quantidade: 1 | Horas/dia: 10.0 | Consumo: 45.0 kWh/mês
+- Chuveiro Elétrico | Quantidade: 1 | Horas/dia: 2.0 | Consumo: 330.0 kWh/mês
+- Computador | Quantidade: 1 | Horas/dia: 12.5 | Consumo: 75.0 kWh/mês
+
+Consumo total: 450.0 kWh/mês
+Valor do kWh: R$ 1.0
+Custo total estimado: R$ 450.0
+
+===== RESULTADO FOTOVOLTAICO =====
+Consumo de referência: 450.0 kWh/mês
+Percentual de atendimento: 100.0 %
+Energia mensal desejada: 450.0 kWh/mês
+HSP utilizada: 4.5 h/dia
+Eficiência global: 80.0 %
+Potência FV necessária: 4.17 kWp
+
+===== MÓDULO SELECIONADO =====
+Fabricante: Trina Solar
+Modelo: TSM-510DE18M(II)
+Potência por módulo: 510.0 Wp
+Quantidade: 9
+Potência instalada: 4.59 kWp
+Potência excedente: 0.42 kWp
+Custo total dos módulos: R$ 4949.1
+
+===== INVERSOR SELECIONADO =====
+Fabricante: Deye
+Modelo: SUN-5K-SG01LP1-US
+Tipo: Híbrido monofásico
+Potência nominal: 5000.0 W
+Potência máxima FV: 6500.0 W
+Número de MPPT: 2
+Compatível com bateria: Sim
+Preço: R$ 15912.9
+
+===== VALIDAÇÃO TÉCNICA =====
+Potência FV instalada: 4590.0 W
+Voc da string: 468.9 V
+Vmp da string: 388.8 V
+Isc da string: 12.42 A
+Imp da string: 11.81 A
+Status: configuração compatível
+
+===== ARMAZENAMENTO POR BATERIA =====
+Armazenamento solicitado: Sim
+Autonomia desejada: 8.0 horas
+Consumo médio diário: 15.0 kWh/dia
+Energia necessária para autonomia: 5.0 kWh
+Eficiência considerada da bateria: 90.0 %
+
+===== BATERIA SELECIONADA =====
+Fabricante: Pylontech
+Modelo: US5000
+Tecnologia: LiFePO4
+Capacidade por bateria: 4.8 kWh
+DoD: 95.0 %
+Quantidade: 2
+Capacidade nominal instalada: 9.6 kWh
+Capacidade útil instalada: 9.12 kWh
+Custo total das baterias: R$ 11998.0
+Inversor compatível com sistema de armazenamento: Sim
+
+===== ORÇAMENTO DO SISTEMA =====
+Custo dos módulos: R$ 4949.1
+Custo do inversor: R$ 15912.9
+Custo das baterias: R$ 11998.0
+Custo total dos equipamentos: R$ 32860.0
+
+===== RESUMO FINAL DO DIMENSIONAMENTO =====
+Consumo de referência: 450.0 kWh/mês
+Percentual atendido por energia solar: 100.0 %
+Geração mensal desejada: 450.0 kWh/mês
+HSP considerada: 4.5 h/dia
+Potência FV calculada: 4.17 kWp
+Potência FV instalada: 4.59 kWp
+Módulos: 9 x Trina Solar TSM-510DE18M(II) - 510.0 Wp
+Inversor: Deye SUN-5K-SG01LP1-US - 5000.0 W
+Sistema com bateria: Sim
+Autonomia desejada: 8.0 horas
+Baterias: 2 x Pylontech US5000
+Capacidade nominal instalada: 9.6 kWh
+Capacidade útil instalada: 9.12 kWh
+Custo total dos equipamentos: R$ 32860.0

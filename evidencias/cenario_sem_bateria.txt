@@ -1,0 +1,70 @@
+===== RELATÓRIO FINAL =====
+Nome: teste_sem_bateria
+Cidade: sp
+Área da casa: 100 m²
+Moradores: 4
+
+Equipamentos cadastrados:
+- Geladeira | Quantidade: 1 | Horas/dia: 10.0 | Consumo: 45.0 kWh/mês
+- Chuveiro Elétrico | Quantidade: 1 | Horas/dia: 2.0 | Consumo: 330.0 kWh/mês
+- Computador | Quantidade: 1 | Horas/dia: 12.5 | Consumo: 75.0 kWh/mês
+
+Consumo total: 450.0 kWh/mês
+Valor do kWh: R$ 1.0
+Custo total estimado: R$ 450.0
+
+===== RESULTADO FOTOVOLTAICO =====
+Consumo de referência: 450.0 kWh/mês
+Percentual de atendimento: 100.0 %
+Energia mensal desejada: 450.0 kWh/mês
+HSP utilizada: 4.5 h/dia
+Eficiência global: 80.0 %
+Potência FV necessária: 4.17 kWp
+
+===== MÓDULO SELECIONADO =====
+Fabricante: Canadian Solar
+Modelo: CS6W-550MS
+Potência por módulo: 550.0 Wp
+Quantidade: 8
+Potência instalada: 4.4 kWp
+Potência excedente: 0.23 kWp
+Custo total dos módulos: R$ 3599.2
+
+===== INVERSOR SELECIONADO =====
+Fabricante: SAJ
+Modelo: R5-6K-S2-15
+Tipo: On-grid monofásico
+Potência nominal: 6000.0 W
+Potência máxima FV: 12000.0 W
+Número de MPPT: 2
+Compatível com bateria: Não
+Preço: R$ 2120.0
+
+===== VALIDAÇÃO TÉCNICA =====
+Potência FV instalada: 4400.0 W
+Voc da string: 396.8 V
+Vmp da string: 333.6 V
+Isc da string: 14.0 A
+Imp da string: 13.2 A
+Status: configuração compatível
+
+===== ARMAZENAMENTO POR BATERIA =====
+Armazenamento solicitado: Não
+
+===== ORÇAMENTO DO SISTEMA =====
+Custo dos módulos: R$ 3599.2
+Custo do inversor: R$ 2120.0
+Custo das baterias: R$ 0
+Custo total dos equipamentos: R$ 5719.2
+
+===== RESUMO FINAL DO DIMENSIONAMENTO =====
+Consumo de referência: 450.0 kWh/mês
+Percentual atendido por energia solar: 100.0 %
+Geração mensal desejada: 450.0 kWh/mês
+HSP considerada: 4.5 h/dia
+Potência FV calculada: 4.17 kWp
+Potência FV instalada: 4.4 kWp
+Módulos: 8 x Canadian Solar CS6W-550MS - 550.0 Wp
+Inversor: SAJ R5-6K-S2-15 - 6000.0 W
+Sistema com bateria: Não
+Custo total dos equipamentos: R$ 5719.2
