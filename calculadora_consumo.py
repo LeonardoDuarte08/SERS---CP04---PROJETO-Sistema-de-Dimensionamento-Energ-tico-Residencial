@@ -54,9 +54,22 @@ while continuar == "s":
 
     consumo_total = consumo_total + consumo
 
-    resumo.append((nome_equipamento, quantidade, horas, round(consumo, 2)))
+    resumo.append(
+        (
+            nome_equipamento,
+            quantidade,
+            horas,
+            round(consumo, 2)
+        )
+    )
 
-    print("Consumo de", nome_equipamento, ":", round(consumo, 2), "kWh/mês")
+    print(
+        "Consumo de",
+        nome_equipamento,
+        ":",
+        round(consumo, 2),
+        "kWh/mês"
+    )
 
     continuar = input("Adicionar outro equipamento? (s/n): ")
 
@@ -67,13 +80,23 @@ consumo_referencia = consumo_total
 print("\n===== DIMENSIONAMENTO FOTOVOLTAICO =====")
 
 percentual_atendimento = float(
-    input("Qual percentual do consumo deseja atender com energia solar? (%): ")
+    input(
+        "Qual percentual do consumo deseja atender "
+        "com energia solar? (%): "
+    )
 )
 
 while percentual_atendimento <= 0 or percentual_atendimento > 100:
-    print("Percentual inválido. Digite um valor entre 1 e 100.")
+    print(
+        "Percentual inválido. "
+        "Digite um valor entre 1 e 100."
+    )
+
     percentual_atendimento = float(
-        input("Qual percentual do consumo deseja atender com energia solar? (%): ")
+        input(
+            "Qual percentual do consumo deseja atender "
+            "com energia solar? (%): "
+        )
     )
 
 fracao_atendimento = percentual_atendimento / 100
@@ -81,34 +104,68 @@ fracao_atendimento = percentual_atendimento / 100
 energia_fv = consumo_referencia * fracao_atendimento
 
 hsp = float(
-    input("Digite as Horas de Sol Pleno (HSP) médias da localização: ")
+    input(
+        "Digite as Horas de Sol Pleno (HSP) "
+        "médias da localização: "
+    )
 )
 
 while hsp <= 0:
     print("HSP inválida. Digite um valor maior que zero.")
+
     hsp = float(
-        input("Digite as Horas de Sol Pleno (HSP) médias da localização: ")
+        input(
+            "Digite as Horas de Sol Pleno (HSP) "
+            "médias da localização: "
+        )
     )
 
 dias = 30
 eficiencia_global = 0.80
 
-potencia_fv = energia_fv / (hsp * dias * eficiencia_global)
+potencia_fv = energia_fv / (
+    hsp * dias * eficiencia_global
+)
 
-# Seleção automática do módulo fotovoltaico
+# T33 / T34 / T35
+# SELEÇÃO AUTOMÁTICA DO MÓDULO FOTOVOLTAICO
 
 modulos = []
 
-with open("dados/modulos.csv", encoding="utf-8-sig") as arquivo:
-    leitor = csv.DictReader(arquivo, delimiter=";")
+with open(
+    "dados/modulos.csv",
+    encoding="utf-8-sig"
+) as arquivo:
+
+    leitor = csv.DictReader(
+        arquivo,
+        delimiter=";"
+    )
 
     for linha in leitor:
+
         modulo = {
             "id": linha["id"],
             "fabricante": linha["fabricante"],
             "modelo": linha["modelo"],
-            "potencia_wp": float(linha["potencia_wp"]),
-            "preco_brl": float(linha["preco_brl"])
+            "potencia_wp": float(
+                linha["potencia_wp"]
+            ),
+            "voc_v": float(
+                linha["voc_v"]
+            ),
+            "isc_a": float(
+                linha["isc_a"]
+            ),
+            "vmp_v": float(
+                linha["vmp_v"]
+            ),
+            "imp_a": float(
+                linha["imp_a"]
+            ),
+            "preco_brl": float(
+                linha["preco_brl"]
+            )
         }
 
         modulos.append(modulo)
@@ -119,18 +176,24 @@ menor_custo = None
 for modulo in modulos:
 
     quantidade_modulos = math.ceil(
-        (potencia_fv * 1000) / modulo["potencia_wp"]
+        (potencia_fv * 1000)
+        / modulo["potencia_wp"]
     )
 
     potencia_instalada = (
-        quantidade_modulos * modulo["potencia_wp"]
+        quantidade_modulos
+        * modulo["potencia_wp"]
     ) / 1000
 
     custo_modulos = (
-        quantidade_modulos * modulo["preco_brl"]
+        quantidade_modulos
+        * modulo["preco_brl"]
     )
 
-    if menor_custo is None or custo_modulos < menor_custo:
+    if (
+        menor_custo is None
+        or custo_modulos < menor_custo
+    ):
 
         menor_custo = custo_modulos
 
@@ -139,49 +202,391 @@ for modulo in modulos:
             "fabricante": modulo["fabricante"],
             "modelo": modulo["modelo"],
             "potencia_wp": modulo["potencia_wp"],
+            "voc_v": modulo["voc_v"],
+            "isc_a": modulo["isc_a"],
+            "vmp_v": modulo["vmp_v"],
+            "imp_a": modulo["imp_a"],
             "quantidade": quantidade_modulos,
             "potencia_instalada": potencia_instalada,
             "custo_total": custo_modulos
         }
 
+# T36 / T37
+# SELEÇÃO E VALIDAÇÃO DO INVERSOR
+
+inversores = []
+
+with open(
+    "dados/inversores.csv",
+    encoding="utf-8-sig"
+) as arquivo:
+
+    leitor = csv.DictReader(
+        arquivo,
+        delimiter=";"
+    )
+
+    for linha in leitor:
+
+        inversor = {
+            "id": linha["id"],
+            "fabricante": linha["fabricante"],
+            "modelo": linha["modelo"],
+            "tipo": linha["tipo"],
+            "potencia_nominal_w": float(
+                linha["potencia_nominal_w"]
+            ),
+            "potencia_max_fv_w": float(
+                linha["potencia_max_fv_w"]
+            ),
+            "tensao_max_entrada_v": float(
+                linha["tensao_max_entrada_v"]
+            ),
+            "faixa_mppt_min_v": float(
+                linha["faixa_mppt_min_v"]
+            ),
+            "faixa_mppt_max_v": float(
+                linha["faixa_mppt_max_v"]
+            ),
+            "corrente_max_entrada_a": float(
+                linha["corrente_max_entrada_a"]
+            ),
+            "numero_mppt": int(
+                linha["numero_mppt"]
+            ),
+            "compativel_bateria":
+                linha["compativel_bateria"],
+            "preco_brl": float(
+                linha["preco_brl"]
+            )
+        }
+
+        inversores.append(inversor)
+
+quantidade_string = melhor_modulo["quantidade"]
+
+voc_string = (
+    melhor_modulo["voc_v"]
+    * quantidade_string
+)
+
+vmp_string = (
+    melhor_modulo["vmp_v"]
+    * quantidade_string
+)
+
+isc_string = melhor_modulo["isc_a"]
+
+imp_string = melhor_modulo["imp_a"]
+
+potencia_instalada_w = (
+    melhor_modulo["potencia_instalada"]
+    * 1000
+)
+
+inversores_compativeis = []
+
+for inversor in inversores:
+
+    potencia_ok = (
+        potencia_instalada_w
+        <= inversor["potencia_max_fv_w"]
+    )
+
+    tensao_max_ok = (
+        voc_string
+        <= inversor["tensao_max_entrada_v"]
+    )
+
+    mppt_ok = (
+        inversor["faixa_mppt_min_v"]
+        <= vmp_string
+        <= inversor["faixa_mppt_max_v"]
+    )
+
+    corrente_ok = (
+        isc_string
+        <= inversor["corrente_max_entrada_a"]
+    )
+
+    if (
+        potencia_ok
+        and tensao_max_ok
+        and mppt_ok
+        and corrente_ok
+    ):
+
+        inversores_compativeis.append(
+            inversor
+        )
+
+melhor_inversor = None
+
+if len(inversores_compativeis) > 0:
+
+    melhor_inversor = min(
+        inversores_compativeis,
+        key=lambda inversor:
+            inversor["preco_brl"]
+    )
+
+# RELATÓRIO FINAL
+
 print("\n===== RELATÓRIO FINAL =====")
+
 print("Nome:", nome)
 print("Cidade:", cidade)
 print("Área da casa:", area, "m²")
 print("Moradores:", moradores)
 
 print("\nEquipamentos cadastrados:")
+
 for item in resumo:
+
     print(
-        "-", item[0],
-        "| Quantidade:", item[1],
-        "| Horas/dia:", item[2],
-        "| Consumo:", item[3], "kWh/mês"
+        "-",
+        item[0],
+        "| Quantidade:",
+        item[1],
+        "| Horas/dia:",
+        item[2],
+        "| Consumo:",
+        item[3],
+        "kWh/mês"
     )
 
-print("Consumo de referência:", round(consumo_referencia, 2), "kWh/mês")
-print("Valor do kWh: R$", valor_kwh)
-print("Custo total estimado: R$", round(custo_total, 2))
-
-print("\n===== RESULTADO FOTOVOLTAICO =====")
-print("Consumo de referência:", round(consumo_referencia, 2), "kWh/mês")
-print("Percentual de atendimento:", percentual_atendimento, "%")
-print("Energia mensal desejada:", round(energia_fv, 2), "kWh/mês")
-print("HSP utilizada:", hsp, "h/dia")
-print("Eficiência global:", eficiencia_global * 100, "%")
-print("Potência FV necessária:", round(potencia_fv, 2), "kWp")
-
-print("\n===== MÓDULO SELECIONADO =====")
-print("Fabricante:", melhor_modulo["fabricante"])
-print("Modelo:", melhor_modulo["modelo"])
-print("Potência por módulo:", melhor_modulo["potencia_wp"], "Wp")
-print("Quantidade:", melhor_modulo["quantidade"])
 print(
-    "Potência instalada:",
-    round(melhor_modulo["potencia_instalada"], 2),
+    "\nConsumo total:",
+    round(consumo_total, 2),
+    "kWh/mês"
+)
+
+print(
+    "Valor do kWh: R$",
+    valor_kwh
+)
+
+print(
+    "Custo total estimado: R$",
+    round(custo_total, 2)
+)
+
+# RESULTADO FOTOVOLTAICO
+
+print(
+    "\n===== RESULTADO FOTOVOLTAICO ====="
+)
+
+print(
+    "Consumo de referência:",
+    round(consumo_referencia, 2),
+    "kWh/mês"
+)
+
+print(
+    "Percentual de atendimento:",
+    percentual_atendimento,
+    "%"
+)
+
+print(
+    "Energia mensal desejada:",
+    round(energia_fv, 2),
+    "kWh/mês"
+)
+
+print(
+    "HSP utilizada:",
+    hsp,
+    "h/dia"
+)
+
+print(
+    "Eficiência global:",
+    eficiencia_global * 100,
+    "%"
+)
+
+print(
+    "Potência FV necessária:",
+    round(potencia_fv, 2),
     "kWp"
 )
+
+# =========================================================
+# MÓDULO SELECIONADO
+# =========================================================
+
+print(
+    "\n===== MÓDULO SELECIONADO ====="
+)
+
+print(
+    "Fabricante:",
+    melhor_modulo["fabricante"]
+)
+
+print(
+    "Modelo:",
+    melhor_modulo["modelo"]
+)
+
+print(
+    "Potência por módulo:",
+    melhor_modulo["potencia_wp"],
+    "Wp"
+)
+
+print(
+    "Quantidade:",
+    melhor_modulo["quantidade"]
+)
+
+print(
+    "Potência instalada:",
+    round(
+        melhor_modulo["potencia_instalada"],
+        2
+    ),
+    "kWp"
+)
+
+print(
+    "Potência excedente:",
+    round(
+        melhor_modulo["potencia_instalada"]
+        - potencia_fv,
+        2
+    ),
+    "kWp"
+)
+
 print(
     "Custo total dos módulos: R$",
-    round(melhor_modulo["custo_total"], 2)
+    round(
+        melhor_modulo["custo_total"],
+        2
+    )
 )
+
+# =========================================================
+# INVERSOR SELECIONADO
+# =========================================================
+
+print(
+    "\n===== INVERSOR SELECIONADO ====="
+)
+
+if melhor_inversor is not None:
+
+    print(
+        "Fabricante:",
+        melhor_inversor["fabricante"]
+    )
+
+    print(
+        "Modelo:",
+        melhor_inversor["modelo"]
+    )
+
+    print(
+        "Tipo:",
+        melhor_inversor["tipo"]
+    )
+
+    print(
+        "Potência nominal:",
+        melhor_inversor[
+            "potencia_nominal_w"
+        ],
+        "W"
+    )
+
+    print(
+        "Potência máxima FV:",
+        melhor_inversor[
+            "potencia_max_fv_w"
+        ],
+        "W"
+    )
+
+    print(
+        "Número de MPPT:",
+        melhor_inversor["numero_mppt"]
+    )
+
+    print(
+        "Compatível com bateria:",
+        melhor_inversor[
+            "compativel_bateria"
+        ]
+    )
+
+    print(
+        "Preço: R$",
+        round(
+            melhor_inversor["preco_brl"],
+            2
+        )
+    )
+
+    print(
+        "\n===== VALIDAÇÃO TÉCNICA ====="
+    )
+
+    print(
+        "Potência FV instalada:",
+        round(
+            potencia_instalada_w,
+            2
+        ),
+        "W"
+    )
+
+    print(
+        "Voc da string:",
+        round(
+            voc_string,
+            2
+        ),
+        "V"
+    )
+
+    print(
+        "Vmp da string:",
+        round(
+            vmp_string,
+            2
+        ),
+        "V"
+    )
+
+    print(
+        "Isc da string:",
+        round(
+            isc_string,
+            2
+        ),
+        "A"
+    )
+
+    print(
+        "Imp da string:",
+        round(
+            imp_string,
+            2
+        ),
+        "A"
+    )
+
+    print(
+        "Status: configuração compatível"
+    )
+
+else:
+
+    print(
+        "Nenhum inversor do dataset "
+        "é compatível com a configuração "
+        "dimensionada."
+    )
